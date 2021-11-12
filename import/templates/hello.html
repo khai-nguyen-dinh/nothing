@@ -1,0 +1,28 @@
+<title>Reusable Form Demo</title>
+<link rel="stylesheet" media="screen" href="static/bootstrap.min.css">
+<link rel="stylesheet" href="static/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="container">
+    <h2>Torrent Web Form</h2>
+    <form action="" method="post" role="form">
+        <div class="form-group">
+            <label for="name">Host:</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="What's your host?">
+        </div>
+        <button type="submit" class="btn btn-success">Upload</button>
+    </form>
+
+</div>
+
+<h2>Tổng số phim đã tải chưa import: {{number}}</h2>
+<table border="1" cellpadding="5" cellspacing="5">
+    {% for row in data %}
+    <tr>
+        {% for d in row %}
+        <td>{{ d }}</td>
+        {% endfor %}
+        <td><a href="http://23.146.144.156:8082/{{row[2]}}">Done</a></td>
+
+    </tr>
+    {% endfor %}
+</table>

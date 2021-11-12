@@ -1,0 +1,11 @@
+create database "GoQuoEngine_Staging";
+create user staging with encrypted password 'LMkrL6kU5px9D5dhkhdXj5JLqp';
+grant all privileges on database "GoQuoEngine_Staging" to staging ;
+
+pg_restore -h stghdppao.c5g3xjcuhlcl.eu-central-1.rds.amazonaws.com -U staging -d GoQuoEngine_Staging --clean --if-exists --no-owner --no-acl -F d GoQuoEngine_Staging_V4-AO
+
+
+create database "GoQuoEngine_Live_QR";
+create database "GoQuoEngine_Live_MHH";
+create user engine_live with encrypted password 'r2RHHa@HmWC!brxVpR$AmefdB!@RMqJQmy9FA';
+grant all privileges on database "GoQuoEngine_Live" to engine_live ;

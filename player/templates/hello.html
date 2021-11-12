@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fast Player</title>
+<script src="https://cdn.jwplayer.com/libraries/jgi9wD3F.js"></script>
+
+</head>
+<body>
+<div id="myElement"></div>
+
+<script type="text/JavaScript">
+    jwplayer("myElement").setup({
+        "playlist": [{
+            "file": "{{ link }}"
+        }]
+    });
+</script>
+</body>
+</html>
