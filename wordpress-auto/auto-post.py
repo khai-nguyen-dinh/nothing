@@ -23,11 +23,15 @@ list_replace = [
         'value': 'VNstack'
     },
     {
-        'key': 'digitaldcean',
+        'key': 'blog.digitalocean',
         'value': 'vnstack'
     },
     {
-        'key': 'Digitaldcean',
+        'key': 'digitalocean',
+        'value': 'vnstack'
+    },
+    {
+        'key': 'Digitalocean',
         'value': 'VNstack'
     },
     {
