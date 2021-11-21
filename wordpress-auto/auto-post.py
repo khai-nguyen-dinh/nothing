@@ -1,10 +1,14 @@
+import random
 import re
-
+import urllib.request
+import lxml.html
 import requests
 import json
 import base64
 import pymongo
 from datetime import datetime, timedelta
+
+from bson import ObjectId
 from pymongo import MongoClient
 
 client = MongoClient('localhost', 27017)
@@ -52,6 +56,10 @@ list_replace = [
         'value': 'code'
     },
     {
+        'key': 'webhoidap',
+        'value': 'vnstack'
+    },
+    {
         'key': '<div class="toolbar"><div class="toolbar-item"><button><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sao chép</font></font></button></div></div></div>',
         'value': ''
     },
@@ -71,16 +79,57 @@ list_replace = [
         'value': ''
     }
 ]
+
+
+def download_image(url):
+    name = random.randrange(10000000, 100000000)
+    fullname = str(name) + ".jpg"
+    try:
+        urllib.request.urlretrieve(url, fullname)
+    except:
+        return None
+    return fullname
+
+
+def header(user, password):
+    credentials = user + ':' + password
+    token = base64.b64encode(credentials.encode())
+    header_json = {'Authorization': 'Basic ' + token.decode('utf-8')}
+    return header_json
+
+
+def upload_image_to_wordpress(image, url, header_json):
+    fileName = download_image(image)
+    if fileName:
+        print(fileName)
+        media = {'file': open('./' + fileName, "rb"), 'caption': 'My great demo picture'}
+        responce = requests.post(url + "wp-json/wp/v2/media", headers=header_json, files=media)
+        out = ''
+        try:
+            raw = responce.json()
+            print(raw['guid']['raw'])
+            return raw['guid']['raw']
+        except:
+            return ''
+    else:
+        return ''
+
+
 collection = db.digitalocean
+count = 0
 for post in collection.find():
+    if count > 300:
+        break
+    else:
+        count = count + 1
     # collection.update({"_id": post['_id']}, {
     #     "$set": {"link": post['link'].replace('https://translate.google.com/translate?sl=en&tl=vi&u=').strip()}})
 
     dt = datetime.now() + timedelta(days=-1)
     dt = dt.strftime("%Y-%m-%dT%X")
-    url = "https://webhoidap.com/wp-json/wp/v2/posts"
-    user = "adminadmin"
-    password = "1JP9 km6E CNNi 5Omb sRVa vTDI"
+    url = "https://vnstack.com/wp-json/wp/v2/posts"
+    user = "spadmin"
+    password = ""
     credentials = user + ':' + password
     token = base64.b64encode(credentials.encode())
     header = {'Authorization': 'Basic ' + token.decode('utf-8')}
@@ -90,14 +139,48 @@ for post in collection.find():
         content = content.replace(element['key'], element['value'])
     # content = re.sub('<a href="https://www-digitalocean-com.translate.goog.*/', '<a href="https://webhoidap.com/', content)
     # content = re.sub('\?_x_tr_sl.*?">', '">', content)
+    # tim link anh
+    list_url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+    # thay the link anh
+    for url in list_url:
+        if 'png' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', header)
+            if tmp:
+                content = content.replace(url, tmp)
+        elif 'jpg' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', header)
+            if tmp:
+                content = content.replace(url, tmp)
+        elif 'jpeg' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', header)
+            if tmp:
+                content = content.replace(url, tmp)
+        else:
+            continue
+
+    # lay tag bai viet
+    tags = []
+    try:
+        response = requests.get(post['link'])
+        tree = lxml.html.fromstring(response.text)
+        title_elem = tree.xpath('//a[@class="tag"]//text()')
+        for tag in title_elem:
+            if 'digitalocean' not in tag:
+                tags.append(tag)
+    except Exception as e:
+        print(e)
+
+    # dang bai
     post = {
         'title': title,
         'status': 'publish',
         'content': content,
         'categories': [28, 75],
-        'tag': '',
+        'tag': tags,
         'slug': post['link'].split('/')[-1],
         'date': dt
     }
     responce = requests.post(url, headers=header, json=post)
+    # xoa bai sau khi dang
+    collection.delete_one({"_id": ObjectId(post['_id'])})
     print(responce.text)

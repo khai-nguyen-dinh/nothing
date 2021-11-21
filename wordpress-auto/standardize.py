@@ -1,7 +1,10 @@
+import base64
+import random
 import re
+import urllib.request
 
+import requests
 from requests_html import HTMLSession
-from lxml import html
 
 session = HTMLSession()
 from pymongo import MongoClient
@@ -60,32 +63,68 @@ list_replace = [
     },
     {
         'key': 'https://www-digitalocean-com.translate.goog/community/tutorial_series',
-        'value': 'https://webhoidap.com'
+        'value': 'https://vnstack.com'
     }, {
         'key': '?_x_tr_sl=en&amp;_x_tr_tl=vi&amp;_x_tr_hl=en-US&amp;_x_tr_pto=nui',
         'value': ''
     }, {
         'key': 'https://www-digitalocean-com.translate.goog/community/tutorials',
-        'value': 'https://webhoidap.com'
+        'value': 'https://vnstack.com'
     },
     {
         'key': 'https://www-digitalocean-com.translate.goog/community/tags',
-        'value': 'https://webhoidap.com/tags'
+        'value': 'https://vnstack.com/tags'
     },
 ]
+
+
+def download_image(url):
+    name = random.randrange(10000000, 100000000)
+    fullname = str(name) + ".jpg"
+    try:
+        urllib.request.urlretrieve(url, fullname)
+    except:
+        return None
+    return fullname
+
+
+def header(user, password):
+    credentials = user + ':' + password
+    token = base64.b64encode(credentials.encode())
+    header_json = {'Authorization': 'Basic ' + token.decode('utf-8')}
+    return header_json
+
+
+def upload_image_to_wordpress(image, url, header_json):
+    fileName = download_image(image)
+    if fileName:
+        print(fileName)
+        media = {'file': open('./' + fileName, "rb"), 'caption': 'My great demo picture'}
+        responce = requests.post(url + "wp-json/wp/v2/media", headers=header_json, files=media)
+        out = ''
+        try:
+            raw = responce.json()
+            print(raw['guid']['raw'])
+            return raw['guid']['raw']
+        except:
+            return ''
+    else:
+        return ''
+
+
 for post in collection.find():
-#     doc = html.fromstring(post['content'])
-#     link = link + doc.xpath('//a/@href')
-# with open('digi.txt', 'a') as f:
-#     for e in link:
-#         if 'digitalocean' in e and 'webhoidap' not in e:
-#             # a = e.split('/')
-#             # del a[-1]
-#             # try:
-#             #     del a[-1]
-#             # except:
-#             #     continue
-#             f.write(e + '\n')
+    #     doc = html.fromstring(post['content'])
+    #     link = link + doc.xpath('//a/@href')
+    # with open('digi.txt', 'a') as f:
+    #     for e in link:
+    #         if 'digitalocean' in e and 'webhoidap' not in e:
+    #             # a = e.split('/')
+    #             # del a[-1]
+    #             # try:
+    #             #     del a[-1]
+    #             # except:
+    #             #     continue
+    #             f.write(e + '\n')
     # r = session.get(post['link'])
     # tmp = []
     # for e in r.html.links:
@@ -110,9 +149,23 @@ for post in collection.find():
     # content =content.replace('https://www-digitalocean-com.translate.goog/docs/','https://webhoidap.com/')
     # content =content.replace('https://www-digitalocean-com.translate.goog/community/community_tags/','https://webhoidap.com/')
     # content =content.replace('https://www-digitalocean-com.translate.goog/products/','https://webhoidap.com/')
-    content =content.replace('https://hacktoberfest.digitalocean.com/','https://webhoidap.com/')
-    content =content.replace('https://www-digitalocean-com.translate.goog/company/blog/','https://webhoidap.com/')
-    content =content.replace('https://www-digitalocean-com.translate.goog/company/blog/','https://webhoidap.com/')
-    content =content.replace('https://www-digitalocean-com.translate.goog/company/blog/','https://webhoidap.com/')
+    content = content.replace('webhoidap.com', 'vnstack.com')
+    list_url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+    hed = header("spadmin", "OVHn oknw iXHO hZr9 FMLs G8Qc")
+    for url in list_url:
+        if 'png' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', hed)
+            if tmp:
+                content = content.replace(url, tmp)
+        elif 'jpg' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', hed)
+            if tmp:
+                content = content.replace(url, tmp)
+        elif 'jpeg' in url and 'vnstack' not in url:
+            tmp = upload_image_to_wordpress(url, 'https://vnstack.com/', hed)
+            if tmp:
+                content = content.replace(url, tmp)
+        else:
+            continue
     collection.update_one({"_id": post['_id']}, {
         "$set": {"content": content}})
