@@ -93,7 +93,25 @@ list_replace = [
     }, {
         'key': '?_x_tr_sl=en&amp;_x_tr_tl=vi&amp;_x_tr_hl=en-US&amp;_x_tr_pto=nui',
         'value': ''
-    }
+    },
+    {
+        'key': 'https://translate.google.com/website?sl=en&amp;tl=vi&amp;nui=1&amp;u=',
+        'value': ''
+    },
+    {
+        'key': 'https://www-digitalocean-com.translate.goog/community/tutorial_series',
+        'value': 'https://vnstack.com'
+    }, {
+        'key': '?_x_tr_sl=en&amp;_x_tr_tl=vi&amp;_x_tr_hl=en-US&amp;_x_tr_pto=nui',
+        'value': ''
+    }, {
+        'key': 'https://www-digitalocean-com.translate.goog/community/tutorials',
+        'value': 'https://vnstack.com'
+    },
+    {
+        'key': 'https://www-digitalocean-com.translate.goog/community/tags',
+        'value': 'https://vnstack.com/tags'
+    },
 ]
 
 
