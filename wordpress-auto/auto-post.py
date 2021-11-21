@@ -206,15 +206,15 @@ for post in collection.find():
 
     # dang bai
     post = {
-        'title': title.replace('DigitalOcean','VNstack'),
+        'title': title.replace('DigitalOcean', 'VNstack'),
         'status': 'publish',
         'content': content,
         'categories': [28, 75],
         'tag': tags,
-        'slug': post['link'].split('/')[-1].replace('digitalocean','vnstack'),
+        'slug': post['link'].split('/')[-1].replace('digitalocean', 'vnstack'),
         'date': dt
     }
     responce = requests.post(website, headers=header, json=post)
     # xoa bai sau khi dang
-    collection.delete_one({"_id": ObjectId(post['_id'])})
+    collection.delete_one({"_id": post['_id']})
     print(responce.text)
