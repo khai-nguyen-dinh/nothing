@@ -19,6 +19,18 @@ list_replace = [
         'value': 'ta'
     },
     {
+        'key': 'DigitalOcean',
+        'value': 'VNstack'
+    },
+    {
+        'key': 'digitaldcean',
+        'value': 'vnstack'
+    },
+    {
+        'key': 'Digitaldcean',
+        'value': 'VNstack'
+    },
+    {
         'key': 'thùng chứa',
         'value': 'container'
     },
@@ -127,7 +139,7 @@ for post in collection.find():
 
     dt = datetime.now() + timedelta(days=-1)
     dt = dt.strftime("%Y-%m-%dT%X")
-    url = "https://vnstack.com/wp-json/wp/v2/posts"
+    website = "https://vnstack.com/wp-json/wp/v2/posts"
     user = "spadmin"
     password = ""
     credentials = user + ':' + password
@@ -135,8 +147,7 @@ for post in collection.find():
     header = {'Authorization': 'Basic ' + token.decode('utf-8')}
     title = post['title']
     content = post['content']
-    for element in list_replace:
-        content = content.replace(element['key'], element['value'])
+
     # content = re.sub('<a href="https://www-digitalocean-com.translate.goog.*/', '<a href="https://webhoidap.com/', content)
     # content = re.sub('\?_x_tr_sl.*?">', '">', content)
     # tim link anh
@@ -157,7 +168,8 @@ for post in collection.find():
                 content = content.replace(url, tmp)
         else:
             continue
-
+    for element in list_replace:
+        content = content.replace(element['key'], element['value'])
     # lay tag bai viet
     tags = []
     try:
@@ -172,15 +184,15 @@ for post in collection.find():
 
     # dang bai
     post = {
-        'title': title,
+        'title': title.replace('DigitalOcean','VNstack'),
         'status': 'publish',
         'content': content,
         'categories': [28, 75],
         'tag': tags,
-        'slug': post['link'].split('/')[-1],
+        'slug': post['link'].split('/')[-1].replace('digitalocean','vnstack'),
         'date': dt
     }
-    responce = requests.post(url, headers=header, json=post)
+    responce = requests.post(website, headers=header, json=post)
     # xoa bai sau khi dang
     collection.delete_one({"_id": ObjectId(post['_id'])})
     print(responce.text)
