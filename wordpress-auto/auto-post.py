@@ -102,7 +102,7 @@ list_replace = [
         'key': 'https://www-digitalocean-com.translate.goog/community/tutorial_series',
         'value': 'https://vnstack.com'
     }, {
-        'key': '?_x_tr_sl=en&amp;_x_tr_tl=vi&amp;_x_tr_hl=en-US&amp;_x_tr_pto=nui',
+        'key': '&_x_tr_sl=en&_x_tr_tl=vi&_x_tr_hl=en-US&_x_tr_pto=nui',
         'value': ''
     }, {
         'key': 'https://www-digitalocean-com.translate.goog/community/tutorials',
@@ -205,7 +205,7 @@ for post in collection.find():
         print(e)
 
     # dang bai
-    post = {
+    new_post = {
         'title': title.replace('DigitalOcean', 'VNstack'),
         'status': 'publish',
         'content': content,
@@ -214,7 +214,7 @@ for post in collection.find():
         'slug': post['link'].split('/')[-1].replace('digitalocean', 'vnstack'),
         'date': dt
     }
-    responce = requests.post(website, headers=header, json=post)
+    responce = requests.post(website, headers=header, json=new_post)
     # xoa bai sau khi dang
     collection.delete_one({"_id": post['_id']})
     print(responce.text)
