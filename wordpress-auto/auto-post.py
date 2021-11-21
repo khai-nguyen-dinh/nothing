@@ -193,6 +193,23 @@ for post in collection.find():
     for element in list_replace:
         content = content.replace(element['key'], element['value'])
     # lay tag bai viet
+    webtags = ["88,Conceptual", "89,Configuration Management", "90,Container", "91,Control Panels", "92,Custom Images",
+               "93,Data Analysis", "94,Databases", "95,Debian", "96,Debian 10", "97,Deployment",
+               "98,Developer Education", "99,Development", "100,Django", "101,DNS", "102,Docker", "103,Drupal",
+               "104,Elasticsearch", "105,Email", "106,FAQ", "20,fashion", "107,Fedora", "108,Firewall", "109,Flask",
+               "110,Flutter", "111,GatsbyJS", "112,Getting Started", "27,git", "113,Glossary", "114,Go", "115,GraphQL",
+               "116,HAProxy", "117,High Availability", "118,HTML", "119,Infrastructure", "120,Initial Server Setup",
+               "121,Interactive", "122,IPv6", "123,Java", "124,JavaScript", "125,Kubernetes", "126,LAMP Stack",
+               "84,Lập trình", "127,Laravel", "128,LEMP", "129,Let’s Encrypt", "130,Linux Basics", "131,Linux Commands",
+               "132,Load Balancing", "133,Logging", "134,Machine Learning", "135,MariaDB", "136,MEAN",
+               "137,Miscellaneous", "138,MongoDB", "139,Monitoring", "140,MySQL", "141,Networking", "142,Next.js",
+               "143,Nginx", "144,Node.js", "145,NoSQL", "146,Object Storage", "147,Open Source", "148,PHP",
+               "149,PHP Frameworks", "150,PostgreSQL", "151,Programming Project", "152,Python", "153,Python Frameworks",
+               "154,Quickstart", "155,React", "156,Redis", "157,Rocky Linux", "158,Rocky Linux 8", "159,Ruby",
+               "160,Ruby on Rails", "161,Scaling", "162,Security", "163,Server Optimization", "164,Slack",
+               "165,Solutions", "166,Spin Up", "167,SQL", "168,SQLite", "169,System Tools", "170,Terraform",
+               "171,TypeScript", "172,Ubuntu", "173,Ubuntu 16.04", "174,Ubuntu 18.04", "175,Ubuntu 20.04", "176,VPN",
+               "177,VS Code", "17,Vue.js", "179,Workshop Kits"]
     tags = []
     try:
         response = requests.get(post['link'])
@@ -203,14 +220,18 @@ for post in collection.find():
                 tags.append(tag)
     except Exception as e:
         print(e)
-
+    final_tag = []
+    for webtag in webtags:
+        for tag in tags:
+            if tag in webtag:
+                final_tag.append(int(webtag.split(',')[0]))
     # dang bai
     new_post = {
         'title': title.replace('DigitalOcean', 'VNstack'),
         'status': 'publish',
         'content': content,
         'categories': [28, 75],
-        'tag': tags,
+        'tag': final_tag,
         'slug': post['link'].split('/')[-1].replace('digitalocean', 'vnstack'),
         'date': dt
     }
